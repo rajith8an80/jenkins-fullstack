@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Contact Saver App</title>
+</head>
+<body>
+  <h1>Contact Saver App</h1>
+
+  <input type="text" id="name" placeholder="Enter name">
+  <input type="text" id="phone" placeholder="Enter phone number">
+  <button onclick="addContact()">Add Contact</button>
+
+  <h2>Contacts</h2>
+  <button onclick="getContacts()">Get Contacts</button>
+  <ul id="contactList"></ul>
+
+  <script>
+    function getContacts() {
+      fetch("/api/contacts")
+        .then(response => response.json())
+        .then(data => {
+          const list = document.getElementById("contactList");
+          list.innerHTML = "";
+          data.forEach(contact => {
+            const li = document.createElement("li");
+            li.textContent = contact.name + " - " + contact.phone;
+            list.appendChild(li);
+          });
+        });
+    }
+
+    function addContact() {
+      const name = document.getElementById("name").value;
+      const phone = document.getElementById("phone").value;
+
+      fetch("/api/contacts", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ name, phone })
+      })
+      .then(response => response.json())
+      .then(() => {
+        getContacts();
+      });
+    }
+  </script>
+</body>
+</html>
